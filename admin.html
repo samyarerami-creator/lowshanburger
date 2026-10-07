@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>مدیریت محصولات | لوشان برگر</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--brown:#4a2a18;--brown-2:#6a3f26;--caramel:#c07a3c;--cream:#fbf6ef;--line:#eadfd1;--muted:#7a6a5e;--red:#a3262a}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Vazirmatn',Tahoma,sans-serif;background:var(--cream);color:#2a1b12;line-height:1.7}
+:focus-visible{outline:3px solid var(--caramel);outline-offset:2px}
+header{background:var(--brown);color:var(--cream);padding:14px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+header h1{font-size:1.2rem;font-weight:800}
+header a,header button{color:var(--cream);font:inherit;background:none;border:1.5px solid var(--cream);padding:6px 16px;border-radius:8px;cursor:pointer;text-decoration:none}
+.wrap{max-width:980px;margin:0 auto;padding:24px 20px 60px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:24px;margin-bottom:24px}
+h2{color:var(--brown);font-size:1.25rem;margin-bottom:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.full{grid-column:1/-1}
+label{display:block;font-weight:500;font-size:.92rem;margin-bottom:4px}
+input,textarea,select{width:100%;font:inherit;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;background:#fff}
+input:focus,textarea:focus,select:focus{border-color:var(--caramel)}
+textarea{resize:vertical;min-height:70px}
+.btn{font:inherit;font-weight:700;border:0;border-radius:10px;padding:11px 26px;cursor:pointer;background:var(--brown);color:#fff}
+.btn:hover{background:var(--brown-2)}
+.btn.alt{background:#fff;color:var(--brown);border:1.5px solid var(--brown)}
+.btn.danger{background:#fff;color:var(--red);border:1.5px solid var(--red);padding:6px 14px}
+.btn.small{padding:6px 14px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.preview{width:90px;height:90px;border-radius:12px;object-fit:cover;background:var(--cream);border:1px solid var(--line)}
+.list{display:grid;gap:10px}
+.prod{display:flex;gap:14px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.prod img,.prod .ph{width:56px;height:56px;border-radius:10px;object-fit:cover;background:var(--cream);flex:none}
+.prod .info{flex:1;min-width:0}
+.prod b{display:block}
+.prod small{color:var(--muted)}
+.tag{display:inline-block;background:var(--cream);border-radius:999px;padding:0 10px;font-size:.8rem;color:var(--brown-2)}
+.msg{margin-top:12px;font-size:.92rem;color:var(--brown-2);min-height:1.5em}
+.note{font-size:.85rem;color:var(--muted);margin-top:10px}
+#gate{max-width:380px;margin:12vh auto;padding:0 20px}
+@media (max-width:640px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- ورود -->
+<div id="gate" hidden>
+  <div class="panel">
+    <h2 id="gateTitle">ورود مدیر</h2>
+    <label for="pw">رمز عبور</label>
+    <input id="pw" type="password" autocomplete="current-password">
+    <div class="msg" id="gateMsg"></div>
+    <button class="btn" id="gateBtn" style="margin-top:8px;width:100%">ورود</button>
+  </div>
+</div>
+
+<!-- پنل -->
+<div id="app" hidden>
+  <header>
+    <h1>مدیریت محصولات · لوشان برگر</h1>
+    <div class="row"><a href="lowshan-burger.html" target="_blank">دیدن سایت</a><button id="logout">خروج</button></div>
+  </header>
+  <div class="wrap">
+
+    <div class="panel">
+      <h2 id="formTitle">افزودن محصول جدید</h2>
+      <div class="grid">
+        <div><label for="name">نام محصول</label><input id="name" maxlength="60"></div>
+        <div><label for="price">قیمت (تومان)</label><input id="price" inputmode="numeric" placeholder="مثلاً 320000"></div>
+        <div><label for="cat">دسته‌بندی</label><input id="cat" list="cats" maxlength="30" placeholder="مثلاً برگر"><datalist id="cats"></datalist></div>
+        <div><label for="img">عکس (اختیاری)</label><input id="img" type="file" accept="image/*"></div>
+        <div class="full"><label for="desc">توضیحات / مواد تشکیل‌دهنده</label><textarea id="desc" maxlength="160"></textarea></div>
+        <div class="full row"><img id="preview" class="preview" alt="" hidden><button class="btn alt small" id="rmImg" hidden>حذف عکس</button></div>
+      </div>
+      <div class="row" style="margin-top:16px">
+        <button class="btn" id="save">افزودن به منو</button>
+        <button class="btn alt" id="cancel" hidden>انصراف از ویرایش</button>
+      </div>
+      <div class="msg" id="msg" role="status"></div>
+    </div>
+
+    <div class="panel">
+      <h2>محصولات ثبت‌شده (<span id="count">۰</span>)</h2>
+      <div class="list" id="list"></div>
+    </div>
+
+    <div class="panel">
+      <h2>پشتیبان و انتقال به هاست</h2>
+      <div class="row">
+        <button class="btn alt" id="export">دانلود products.json</button>
+        <button class="btn alt" id="import">بارگذاری از فایل</button>
+        <input type="file" id="importFile" accept="application/json" hidden>
+        <button class="btn danger" id="reset">پاک کردن همه</button>
+      </div>
+      <p class="note">محصولات در همین مرورگر ذخیره می‌شوند. برای اینکه مشتریان هم تغییرات را ببینند، فایل products.json را دانلود کنید و کنار lowshan-burger.html روی هاست آپلود کنید.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+const KEY='lowshan_products', PW='lowshan_admin_pw';
+const $=id=>document.getElementById(id);
+const esc=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fa=n=>Number(n).toLocaleString('fa-IR');
+const toEn=s=>String(s).replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[^\d]/g,'');
+
+let products=[], editing=-1, imgData='';
+const load=()=>{try{const a=JSON.parse(localStorage.getItem(KEY)||'[]');products=Array.isArray(a)?a:[]}catch(e){products=[]}};
+function persist(){
+  try{localStorage.setItem(KEY,JSON.stringify(products));return true}
+  catch(e){say('حافظه مرورگر پر است. عکس‌ها را کوچک‌تر کنید یا فایل پشتیبان بگیرید و محصولات قدیمی را حذف کنید.');return false}
+}
+function say(t){$('msg').textContent=t}
+
+/* ورود */
+async function sha(t){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+const hasPw=()=>!!localStorage.getItem(PW);
+function showGate(){
+  $('app').hidden=true;$('gate').hidden=false;
+  $('gateTitle').textContent=hasPw()?'ورود مدیر':'تعیین رمز عبور (اولین ورود)';
+  $('gateBtn').textContent=hasPw()?'ورود':'ذخیره رمز و ورود';
+  $('pw').value='';$('pw').focus();
+}
+async function enter(){
+  const v=$('pw').value;
+  if(v.length<4){$('gateMsg').textContent='رمز حداقل ۴ کاراکتر باشد.';return}
+  const h=await sha(v);
+  if(!hasPw()){localStorage.setItem(PW,h)}
+  else if(localStorage.getItem(PW)!==h){$('gateMsg').textContent='رمز اشتباه است.';return}
+  sessionStorage.setItem('lowshan_auth','1');start();
+}
+$('gateBtn').onclick=enter;
+$('pw').addEventListener('keydown',e=>{if(e.key==='Enter')enter()});
+$('logout').onclick=()=>{sessionStorage.removeItem('lowshan_auth');showGate()};
+
+/* تصویر: کوچک‌سازی */
+function resize(file){
+  return new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onerror=rej;
+    r.onload=()=>{
+      const im=new Image();
+      im.onerror=rej;
+      im.onload=()=>{
+        const m=480,k=Math.min(1,m/Math.max(im.width,im.height));
+        const c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);
+        c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+        res(c.toDataURL('image/jpeg',.75));
+      };
+      im.src=r.result;
+    };
+    r.readAsDataURL(file);
+  });
+}
+function setPreview(d){imgData=d||'';$('preview').hidden=!d;$('rmImg').hidden=!d;if(d)$('preview').src=d}
+$('img').onchange=async e=>{
+  const f=e.target.files[0];if(!f)return;
+  try{setPreview(await resize(f))}catch(x){say('خواندن عکس ممکن نشد.')}
+};
+$('rmImg').onclick=()=>{setPreview('');$('img').value=''};
+
+/* فرم */
+function resetForm(){
+  editing=-1;['name','price','cat','desc'].forEach(i=>$(i).value='');
+  $('img').value='';setPreview('');
+  $('formTitle').textContent='افزودن محصول جدید';$('save').textContent='افزودن به منو';$('cancel').hidden=true;
+}
+$('cancel').onclick=()=>{resetForm();say('')};
+$('save').onclick=()=>{
+  const name=$('name').value.trim(),cat=$('cat').value.trim(),desc=$('desc').value.trim(),price=parseInt(toEn($('price').value),10);
+  if(!name||!cat||!(price>=0)||$('price').value.trim()===''){say('نام، قیمت و دسته‌بندی را کامل وارد کنید.');return}
+  const p={name,cat,desc,price}; if(imgData)p.img=imgData;
+  const backup=products.slice();
+  if(editing>=0)products[editing]=p;else products.push(p);
+  if(!persist()){products=backup;return}
+  say(editing>=0?'محصول ویرایش شد.':'محصول به منوی سایت اضافه شد.');
+  resetForm();draw();
+};
+
+/* لیست */
+function draw(){
+  $('count').textContent=fa(products.length);
+  $('cats').innerHTML=[...new Set(products.map(p=>p.cat))].map(c=>`<option value="${esc(c)}">`).join('');
+  $('list').innerHTML=products.length?products.map((p,i)=>`
+    <div class="prod">${p.img?`<img src="${esc(p.img)}" alt="">`:'<div class="ph"></div>'}
+      <div class="info"><b>${esc(p.name)}</b><small>${fa(p.price)} تومان</small> <span class="tag">${esc(p.cat)}</span></div>
+      <button class="btn alt small" data-e="${i}">ویرایش</button>
+      <button class="btn danger" data-d="${i}">حذف</button></div>`).join('')
+    :'<p class="note">هنوز محصولی اضافه نکرده‌اید. اولین محصول را از فرم بالا ثبت کنید.</p>';
+}
+$('list').onclick=e=>{
+  const ed=e.target.dataset.e,de=e.target.dataset.d;
+  if(ed!==undefined){
+    const p=products[ed];editing=+ed;
+    $('name').value=p.name;$('price').value=p.price;$('cat').value=p.cat;$('desc').value=p.desc||'';setPreview(p.img||'');
+    $('formTitle').textContent='ویرایش محصول';$('save').textContent='ذخیره تغییرات';$('cancel').hidden=false;
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  if(de!==undefined&&confirm('این محصول حذف شود؟')){products.splice(+de,1);persist();say('محصول حذف شد.');draw()}
+};
+
+/* پشتیبان */
+$('export').onclick=()=>{
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(products,null,2)],{type:'application/json'}));
+  a.download='products.json';a.click();URL.revokeObjectURL(a.href);
+};
+$('import').onclick=()=>$('importFile').click();
+$('importFile').onchange=async e=>{
+  const f=e.target.files[0];if(!f)return;
+  try{
+    const j=JSON.parse(await f.text());
+    if(!Array.isArray(j)||j.some(p=>!p||typeof p.name!=='string'||typeof p.cat!=='string'||isNaN(+p.price)))throw 0;
+    products=j.map(p=>({name:p.name,cat:p.cat,desc:p.desc||'',price:+p.price,...(p.img?{img:p.img}:{})}));
+    persist();draw();say('فایل بارگذاری شد.');
+  }catch(x){say('فایل معتبر نیست.')}
+  e.target.value='';
+};
+$('reset').onclick=()=>{if(confirm('همه محصولات پاک شود؟ (قبلش پشتیبان بگیرید)')){products=[];persist();draw();say('همه محصولات پاک شد.')}};
+
+function start(){$('gate').hidden=true;$('app').hidden=false;load();draw()}
+sessionStorage.getItem('lowshan_auth')==='1'&&hasPw()?start():showGate();
+</script>
+</body>
+</html>
